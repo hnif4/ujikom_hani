@@ -10,7 +10,8 @@ use App\Http\Controllers\Api\GaleryController;
 use App\Http\Controllers\Api\PhotoController;
 use App\Http\Controllers\Api\ProfileSekolahController;
 use App\Http\Controllers\Api\ProfileController;
-use App\Http\Controllers\Admin\SliderController;
+use App\Http\Controllers\Api\SliderController;
+use App\Models\Category;
 use App\Models\Photo;
 use Illuminate\Container\Attributes\Auth;
 
@@ -22,13 +23,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
  * Api Register
  */
 Route::post('/register/admin', [RegisterController::class, 'registerUser']);
-Route::post('/register/guest', [RegisterController::class, 'registerGuest']);
 
 /**
  * Api Login
  */
 Route::post('/login/admin', [LoginController::class, 'loginUser']); //untuk admin
-Route::post('/login/guest', [LoginController::class, 'loginGuest']); //untuk tamu
 
 /**
  * Api Logout
@@ -39,10 +38,7 @@ Route::middleware('auth:sanctum')->post('/logout', [LoginController::class, 'log
 /**
  * Api categories
  */
-Route::get('/categories', [CategoryController::class, 'index']); // Rute untuk mendapatkan semua kategori
-Route::get('/categories/{id}', [CategoryController::class, 'show']); // Rute untuk mendapatkan kategori berdasarkan ID
-Route::get('/categories/home', [CategoryController::class, 'categoryHome']); // Rute untuk mendapatkan kategori untuk home
-
+Route::apiResource('categories', CategoryController::class);
 /**
  * Api Post
  *
@@ -67,7 +63,7 @@ Route::apiResource('galeries', GaleryController::class); //route otomatis untuk 
  /**
  * API Slider
  */
-Route::get('/slider', [SliderController::class, 'index']);
+Route::apiResource('sliders', SliderController::class);
  /**
  * Api Profile User
  */

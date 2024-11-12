@@ -31,25 +31,26 @@ class PhotoController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'judul_foto' => 'required|string|max:255',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'galery_id' => 'required|exists:galery,id', // Mengganti galeries dengan galery
-        ]);
+{
+    $request->validate([
+        'judul_foto' => 'required|string|max:255',
+        'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'galery_id' => 'required|exists:galery,id',
+    ], [
+        'image.max' => 'Gambar tidak boleh lebih dari 2 MB.',
+    ]);
 
-        $path = $request->file('image')->store('photos', 'public');
+    $path = $request->file('image')->store('photos', 'public');
 
-        Photo::create([
-            'judul_foto' => $request->judul_foto,
-            'isi_foto' => $path,
-            'user_id' => Auth::id(), // Menggunakan Auth facade
-            'galery_id' => $request->galery_id,
-        ]);
+    Photo::create([
+        'judul_foto' => $request->judul_foto,
+        'isi_foto' => $path,
+        'user_id' => Auth::id(),
+        'galery_id' => $request->galery_id,
+    ]);
 
-        return redirect()->route('admin.photos.index')->with('success', 'Foto berhasil ditambahkan.');
-    }
-
+    return redirect()->route('admin.photos.index')->with('success', 'Foto berhasil ditambahkan.');
+}
 
     public function edit($id)
     {
@@ -60,31 +61,30 @@ class PhotoController extends Controller
 
 
     public function update(Request $request, $id)
-    {
-        $request->validate([
-            'judul_foto' => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'galery_id' => 'required|exists:galery,id', // Mengganti galeries dengan galery
-        ]);
+{
+    $request->validate([
+        'judul_foto' => 'required|string|max:255',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'galery_id' => 'required|exists:galery,id',
+    ], [
+        'image.max' => 'Gambar tidak boleh lebih dari 2 MB.',
+    ]);
 
-        $photo = Photo::findOrFail($id);
+    $photo = Photo::findOrFail($id);
 
-        $photo->judul_foto = $request->judul_foto;
-        $photo->galery_id = $request->galery_id;
+    $photo->judul_foto = $request->judul_foto;
+    $photo->galery_id = $request->galery_id;
 
-        if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada
-            Storage::disk('public')->delete($photo->isi_foto);
-
-            // Simpan gambar baru
-            $path = $request->file('image')->store('photos', 'public');
-            $photo->isi_foto = $path;
-        }
-
-        $photo->save();
-
-        return redirect()->route('admin.photos.index')->with('success', 'Foto berhasil diperbarui.');
+    if ($request->hasFile('image')) {
+        Storage::disk('public')->delete($photo->isi_foto);
+        $path = $request->file('image')->store('photos', 'public');
+        $photo->isi_foto = $path;
     }
+
+    $photo->save();
+
+    return redirect()->route('admin.photos.index')->with('success', 'Foto berhasil diperbarui.');
+}
 
     public function destroy($id)
     {

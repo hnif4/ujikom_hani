@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Category;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
@@ -23,9 +25,7 @@ class CategoryController extends Controller
     public function show($id)
     {
         // Get category with related posts
-        $category = Category::with('posts')
-            ->where('id', $id)
-            ->first();
+        $category = Category::with('posts')->find($id);
 
         if (!$category) {
             return response()->json(['message' => 'Category not found'], 404);
@@ -35,11 +35,61 @@ class CategoryController extends Controller
     }
 
     /**
-     * API Category - Get categories for home
+     * API Category - Store a new category
      */
-    public function categoryHome()
+    public function store(Request $request)
     {
-        // Get categories for home, customize as needed
-        return $this->index();
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $category = Category::create($request->only(['name', 'description']));
+        return response()->json($category, 201);
     }
+
+    /**
+     * API Category - Update an existing category
+     */
+    public function update(Request $request, $id)
+    {
+        $category = Category::find($id);
+
+        if (!$category) {
+            return response()->json(['message' => 'Category not found'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'sometimes|required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $category->update($request->only(['name', 'description']));
+        return response()->json($category);
+    }
+
+    /**
+     * API Category - Delete a category
+     */
+    public function destroy($id)
+    {
+        $category = Category::find($id);
+
+        if (!$category) {
+            return response()->json(['message' => 'Category not found'], 404);
+        }
+
+        $category->delete();
+        return response()->json(['message' => 'Category deleted successfully'], 200);
+    }
+
+   
 }

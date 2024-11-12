@@ -20,6 +20,7 @@ class Post extends Model
         'user_id',
         'status',
         'tanggal_posts',
+        'lokasi',
     ];
 
     // Relasi ke tabel kategori (many to one)
@@ -37,6 +38,6 @@ class Post extends Model
     // Relasi ke galeries jika satu post bisa memiliki banyak galeri
     public function galeries()
     {
-        return $this->hasMany(Galery::class, 'post_id'); // Sesuaikan foreign key jika berbeda
+        return $this->hasMany(Galery::class, 'post_id');
     }
 }

@@ -37,6 +37,7 @@ class PostsController extends Controller
         return view('admin.posts.create', compact('categories'));
     }
 
+
     public function store(Request $request)
     {
         // Validasi input
@@ -47,6 +48,8 @@ class PostsController extends Controller
             'status' => 'required|string|in:aktif,tidak aktif', // Validasi status
             'category_id' => 'required|exists:categories,id',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar
+        ], [
+            'image.max' => 'Ukuran file gambar tidak boleh lebih dari 2MB.', // Custom error message
         ]);
 
         // Simpan file gambar
@@ -57,9 +60,9 @@ class PostsController extends Controller
             'judul' => $request->judul,
             'isi' => $request->isi,
             'tanggal_posts' => $request->tanggal_posts,
-            'status' => $request->status, // Menggunakan status yang dipilih
+            'status' => $request->status,
             'user_id' => Auth::id(),
-            'category_id' => $request->category_id, // Kategori yang dipilih
+            'category_id' => $request->category_id,
             'image' => $path,
         ]);
 
@@ -77,12 +80,16 @@ class PostsController extends Controller
     {
         $post = Post::findOrFail($id);
 
+        // Validasi input, termasuk gambar jika ada
         $request->validate([
             'judul' => 'required|string|max:255',
             'isi' => 'required|string',
             'tanggal_posts' => 'required|date',
             'status' => 'required|string|in:aktif,tidak aktif', // Validasi status
             'category_id' => 'required|exists:categories,id',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar baru jika ada
+        ], [
+            'image.max' => 'Ukuran file gambar tidak boleh lebih dari 2MB.', // Pesan error custom
         ]);
 
         // Simpan gambar jika ada yang diunggah
@@ -106,6 +113,7 @@ class PostsController extends Controller
 
         return redirect()->route('admin.posts.index')->with('success', 'Post berhasil diperbarui.');
     }
+
 
     public function destroy($id)
     {

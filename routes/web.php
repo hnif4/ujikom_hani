@@ -10,13 +10,12 @@ use App\Http\Controllers\Admin\GaleryController;
 use App\Http\Controllers\Admin\PhotoController;
 use App\Http\Controllers\Admin\ProfileSekolahController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\PostsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Middleware\PreventBackAfterLogout;
 use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\VPostController;
-
 
 
 
@@ -26,19 +25,14 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
 //INI ADALAH ROUTE UNTUK FRONTEND 
 Route::get('/', [HomeController::class, 'index']);
 
-Route::get('/posts', [VPostController::class, 'index'])->name('posts.index');
-Route::get('/posts/category/{id}', [VPostController::class, 'postsByCategory'])->name('posts.byCategory');
-Route::get('/informasi/{id}', [HomeController::class, 'show'])->name('informasi.show');
 
 
 
-
-
-
-//INI ADALAH ROUTE UNTUK 
+//INI ADALAH ROUTE UNTUK BACKEND
 // Group route dengan prefix "admin"
 Route::prefix('admin')->group(function () {
     // Group route dengan middleware "auth"
@@ -63,8 +57,22 @@ Route::prefix('admin')->group(function () {
 
         //route resource slider
         Route::resource('/slider', SliderController::class, ['except' => ['show','create', 'edit' , 'update'], 'as' => 'admin']);
+
+        //route untuk massage
+        Route::get('/message', [MessageController::class, 'index'])->name('admin.message.index');
+        Route::get('/message/{id}', [MessageController::class, 'show'])->name('admin.message.show');
         // Route Profile
         Route::get('/profile', [ProfileController::class, 'index'])->name('admin.profile.index');
         Route::put('/profile/update', [ProfileController::class, 'updateProfile'])->name('user-profile-information.update');
     });
 });
+
+Route::get('/informasi/{post}', [HomeController::class, 'showInformasi'])->name('informasi.show');
+
+// Tambahkan route untuk detail agenda
+Route::get('/agenda/{post}', [HomeController::class, 'showAgenda'])->name('agenda.show');
+
+// Tambahkan route untuk pencarian
+Route::get('/search', [HomeController::class, 'search'])->name('search');
+
+Route::post('/contact', [HomeController::class, 'contact'])->name('contact.store');

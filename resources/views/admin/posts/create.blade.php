@@ -6,6 +6,19 @@
 
     <form action="{{ route('admin.posts.store') }}" method="POST" class="mt-6" enctype="multipart/form-data">
         @csrf
+
+        <!-- Display All Validation Errors -->
+        @if ($errors->any())
+            <div class="mb-4 p-4 bg-red-100 text-red-700 rounded">
+                <strong>Terjadi kesalahan:</strong>
+                <ul class="mt-2">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <!-- Judul Post -->
         <div class="mb-4">
             <label for="judul" class="block text-sm font-medium text-gray-700">Judul Posts</label>
@@ -33,25 +46,23 @@
             </select>
         </div>
 
-
-
         <!-- Dropdown Kategori -->
         <div class="mb-4">
             <label for="category_id" class="block text-sm font-medium text-gray-700">Kategori</label>
             <select name="category_id" id="category_id" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
                 @foreach($categories as $category)
-                <option value="{{ $category->id }}">
-                    {{ $category->nama }}
-                </option>
+                    <option value="{{ $category->id }}">{{ $category->nama }}</option>
                 @endforeach
             </select>
         </div>
-
 
         <!-- Input untuk Unggah Gambar -->
         <div class="mb-4">
             <label for="image" class="block text-sm font-medium text-gray-700">Unggah Gambar</label>
             <input type="file" name="image" id="image" accept="image/*" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
+            @error('image')
+                <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
+            @enderror
         </div>
 
         <!-- Tombol Simpan -->

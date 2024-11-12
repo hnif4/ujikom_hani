@@ -29,6 +29,14 @@
                 <span class="text-gray-600">Gambar saat ini</span>
             </div>
             <input type="file" name="image" id="image" class="mt-1 block w-full p-3 border border-blue-300 rounded-md">
+            
+            <!-- Menampilkan pesan error jika ada -->
+            @if ($errors->has('image'))
+                <div class="text-sm text-red-600 mt-2">
+                    {{ $errors->first('image') }}
+                </div>
+            @endif
+
             <p class="mt-2 text-sm text-gray-500">Biarkan kosong jika tidak ingin mengganti gambar.</p>
         </div>
 
@@ -47,7 +55,6 @@
                 <option value="tidak aktif" {{ $post->status == 'tidak aktif' ? 'selected' : '' }}>Tidak Aktif</option>
             </select>
         </div>
-
 
         <!-- Kategori -->
         <div class="mb-4">
